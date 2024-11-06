@@ -849,6 +849,8 @@ int main(int argc, char** argv)
 // Step 2: Copy Input data from Host to Global Memory on the device
 // ------------------------------------------------------
 //////////////////////////////   TEMPLATE START  //////////////////////////////
+    cl::Event write_event;
+
     OCL_CHECK(
         err, err = q.enqueueMigrateMemObjects({
         buffer_HBM_embedding0, buffer_HBM_embedding1, buffer_HBM_embedding2, buffer_HBM_embedding3, 
@@ -861,18 +863,22 @@ int main(int argc, char** argv)
         buffer_HBM_embedding28, buffer_HBM_embedding29, buffer_HBM_embedding30, buffer_HBM_embedding31, 
         // buffer_DDR_embedding0, buffer_DDR_embedding1 ,
         /* buffer_PLRAM_embedding0, buffer_PLRAM_embedding1, buffer_PLRAM_embedding2, buffer_PLRAM_embedding3, 
-        buffer_idx */}, 0/* 0 means from host*/));	
+        buffer_idx */}, 0/* 0 means from host*/, nullptr, &write_event));	
+
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 // ----------------------------------------
 // Step 2: Submit Kernels for Execution
 // ----------------------------------------
-    OCL_CHECK(err, err = q.enqueueTask(krnl_vector_add));
+    cl::Event kernel_event, read_event;
+    OCL_CHECK(err, err = q.enqueueTask(krnl_vector_add, nullptr, &kernel_event));
+    std::vector<cl::Event> wait_list = {kernel_event};
 // --------------------------------------------------
 // Step 2: Copy Results from Device Global Memory to Host
 // --------------------------------------------------
-    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST));
+    OCL_CHECK(err, err = q.enqueueMigrateMemObjects({buffer_output},CL_MIGRATE_MEM_OBJECT_HOST, &wait_list, &read_event));
 
     q.finish();
+
 // OPENCL HOST CODE AREA END
 
     // Compare the results of the Device to the simulation
@@ -894,6 +900,27 @@ int main(int argc, char** argv)
 // Step 3: Release Allocated Resources
 // ============================================================================
     delete[] fileBuf;
+
+// ============================================================================
+// Extra step: measuring times
+// ============================================================================
+    std::cout << "==== PROFILING INFO ====" << '\n';
+    cl_ulong kernel_start_time = kernel_event.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+    cl_ulong kernel_end_time = kernel_event.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+    cl_ulong kernel_time = kernel_end_time - kernel_start_time;
+    std::cout << "Kernel execution time: " << kernel_time / 1e6 << " ms" << '\n';
+
+    cl_ulong read_start_time = read_event.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+    cl_ulong read_end_time = read_event.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+    cl_ulong write_start_time = write_event.getProfilingInfo<CL_PROFILING_COMMAND_START>();
+    cl_ulong write_end_time = write_event.getProfilingInfo<CL_PROFILING_COMMAND_END>();
+    cl_ulong transfer_time = ((write_end_time - write_start_time) + (read_end_time - read_start_time));
+
+    std::cout << "Data transfer time: " << transfer_time / 1e6  << " ms" << '\n';
+    std::cout << "\tHost to device: " << (write_end_time - write_start_time) / 1e6 << " ms" << '\n';
+    std::cout << "\tDevice to host: " << (read_end_time - read_start_time) / 1e6 << " ms" << '\n';
+    std::cout << "Total time: " << (kernel_time + transfer_time) / 1e6 << " ms" << '\n';
+    std::cout << "========================" << '\n';
 
     std::cout << "TEST " << (match ? "PASSED" : "FAILED") << std::endl; 
     return (match ? EXIT_SUCCESS : EXIT_FAILURE);
