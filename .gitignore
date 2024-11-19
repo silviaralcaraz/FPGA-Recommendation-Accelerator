@@ -1,6 +1,7 @@
 # Xilinx Vitis
 Debug/
 Release/
+xclbin/
 *.log
 *.jou
 *.str
