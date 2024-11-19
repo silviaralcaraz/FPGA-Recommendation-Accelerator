@@ -12,6 +12,7 @@ xclbin/
 *.tmp
 *.csv
 xrc.log
+xrt.*
 
 # Vitis workspace files
 *.xise
