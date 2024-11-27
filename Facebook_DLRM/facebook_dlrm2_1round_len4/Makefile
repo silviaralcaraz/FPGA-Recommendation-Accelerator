@@ -2,7 +2,7 @@
 
 help::
 	$(ECHO) "Makefile Usage:"
-	$(ECHO) "  make all TARGET=<sw_emu/hw_emu/hw> DEVICE=<FPGA platform> VER=<host_cpp/host_c>"
+	$(ECHO) "  make all TARGET=<sw_emu/hw_emu/hw> DEVICE=<FPGA platform> VER=<host_cpp/host_c> PRECISION=<32/64/16> DEBUG=<0/1>"
 	$(ECHO) "      Command to pick the specific files and generates the design for specified Target and Device."
 	$(ECHO) ""
 	$(ECHO) "  make clean "
@@ -11,8 +11,11 @@ help::
 	$(ECHO) "  make cleanall"
 	$(ECHO) "      Command to remove all the generated files."
 	$(ECHO) ""
-	$(ECHO) "  make check TARGET=<sw_emu/hw_emu/hw> DEVICE=<FPGA platform>"
+	$(ECHO) "  make check TARGET=<sw_emu/hw_emu/hw> DEVICE=<FPGA platform> PRECISION=<32/64/16> DEBUG=<0/1>"
 	$(ECHO) "      Command to run application in emulation."
+	$(ECHO) ""
+	$(ECHO) "  make host "
+	$(ECHO) "      Command to build only the host code."
 	$(ECHO) ""
 
 TARGETS := hw
@@ -40,6 +43,20 @@ opencl_LDFLAGS += -L$(XILINX_XRT)/lib -lOpenCL -pthread
 
 CXXFLAGS += $(opencl_CXXFLAGS)
 LDFLAGS += $(opencl_LDFLAGS)
+
+# Check if DEBUG is set to 1
+ifeq ($(DEBUG), 1)
+    CXXFLAGS += -DDEBUG
+endif
+
+# Compilation flags depending on the precision
+ifeq ($(PRECISION),16)
+    CXXFLAGS += -DUSE_16BIT
+else ifeq ($(PRECISION),64)
+    CXXFLAGS += -DUSE_64BIT
+else
+    CXXFLAGS += -DUSE_32BIT
+endif
 
 # Host CPP FILE
 HOST_C_SRCS += src/host.c
@@ -116,6 +133,29 @@ ifeq ($(VER),host_cpp)
 ifeq ($(TARGET),$(filter $(TARGET),sw_emu hw_emu))
 	$(CP) $(EMCONFIG_DIR)/emconfig.json .
 	XCL_EMULATION_MODE=$(TARGET) ./$(EXECUTABLE) $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin
+#$(DEVICE)
+# hw -> FPGA
+else
+	 ./$(EXECUTABLE) $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin
+#$(DEVICE)
+endif
+# else, VER!=host_cpp
+else
+ifeq ($(TARGET),$(filter $(TARGET),sw_emu hw_emu))
+	$(CP) $(EMCONFIG_DIR)/emconfig.json .
+	XCL_EMULATION_MODE=$(TARGET) ./$(EXECUTABLE) $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin $(DEVICE)
+else
+	 ./$(EXECUTABLE) $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin $(DEVICE)
+endif
+endif
+
+valgrind: all
+# e.g. make check TARGET=sw_emu DEVICE=xilinx_u280_xdma_201920_1 VER=host_cpp
+ifeq ($(VER),host_cpp)
+# sw / hw emulation
+ifeq ($(TARGET),$(filter $(TARGET),sw_emu hw_emu))
+	$(CP) $(EMCONFIG_DIR)/emconfig.json .
+	XCL_EMULATION_MODE=$(TARGET) valgrind --leak-check=full --track-origins=yes ./$(EXECUTABLE) $(XCLBIN)/$(KERNEL_NAME).$(TARGET).xclbin
 #$(DEVICE)
 # hw -> FPGA
 else

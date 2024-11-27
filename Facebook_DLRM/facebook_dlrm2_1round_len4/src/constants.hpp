@@ -3,11 +3,27 @@
 
 //////////////////////////////   TEMPLATE START  //////////////////////////////
 
-// #define AXI_WIDTH_PLRAM 32
+//  D_TYPE is defined based on the preprocessor directive set by the Makefile
+#if defined(USE_16BIT)
+typedef ap_int<16> D_TYPE; // Define D_TYPE as 16-bit integer
+#define AXI_WIDTH_HBM 16
+#define INT_BITS 16
+// #define AXI_WIDTH_PLRAM 16
+// #define AXI_WIDTH_DDR 16
+#elif defined(USE_64BIT)
+typedef ap_int<64> D_TYPE; // Define D_TYPE as 64-bit integer
+#define AXI_WIDTH_HBM 64
+#define INT_BITS 64
+// #define AXI_WIDTH_PLRAM 64
+// #define AXI_WIDTH_DDR 64
+#else
+typedef ap_int<32> D_TYPE; // Define D_TYPE as 32-bit integer
 #define AXI_WIDTH_HBM 32
-// #define AXI_WIDTH_DDR 32
-
 #define INT_BITS 32
+// #define AXI_WIDTH_PLRAM 32
+// #define AXI_WIDTH_DDR 32
+#endif
+
 // #define INTS_PER_AXI_PLRAM 1
 #define INTS_PER_AXI_HBM 1
 // #define INTS_PER_AXI_DDR 1
@@ -26,8 +42,8 @@
 // #define TABLE_NUM_DDR 4
 // #define TABLE_NUM_PLRAM 16
 
-/////////////////////////   HBM   ///////////////////////// 
-// alignment of tables to HBM: 
+/////////////////////////   HBM   /////////////////////////
+// alignment of tables to HBM:
 // table 0 ~ 31 -> HBM 0 ~ 31
 // table 32 ~ 63 -> HBM 0 ~ 31
 
@@ -489,12 +505,11 @@
 
 //////////////////////////////   TEMPLATE END  //////////////////////////////
 
-
 typedef ap_int<AXI_WIDTH_HBM> t_hbm;
 // typedef ap_int<AXI_WIDTH_DDR> t_ddr;
 // typedef ap_int<AXI_WIDTH_PLRAM> t_plram;
 
-typedef int D_TYPE;
+// typedef int D_TYPE;
 // typedef ap_int<128> W_TYPE;  // weights / feature width
 // typedef ap_int<256> FIFO_TYPE;  // stream width
 
@@ -518,9 +533,9 @@ typedef int D_TYPE;
 // #define ROW_PER_PE3 (HIDDEN_SIZE3 / PE_NUM3) // 256 / 32 = 8
 // #define ROW_PER_PE_OUT (OUTPUT_SIZE / PE_NUM_OUT) // 1 / 1 = 1
 
-#define FIFO_BATCH_SIZE 8   // cache 2 batches at max in FIFO
+#define FIFO_BATCH_SIZE 8 // cache 2 batches at max in FIFO
 #define BATCH_SIZE 32
 // #define BATCH_NUM 1000000
 // #define BATCH_NUM 2
-// #define BATCH_NUM 1
+//#define BATCH_NUM 1
 #define BATCH_NUM 5000 // NOTE! load access idx to BRAM!
