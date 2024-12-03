@@ -52,10 +52,13 @@ endif
 # Compilation flags depending on the precision
 ifeq ($(PRECISION),16)
     CXXFLAGS += -DUSE_16BIT
+	CLFLAGS += -DUSE_16BIT
 else ifeq ($(PRECISION),64)
     CXXFLAGS += -DUSE_64BIT
+	CLFLAGS += -DUSE_64BIT
 else
     CXXFLAGS += -DUSE_32BIT
+	CLFLAGS += -DUSE_32BIT
 endif
 
 # Host CPP FILE

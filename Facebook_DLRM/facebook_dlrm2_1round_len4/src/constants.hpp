@@ -4,13 +4,13 @@
 //////////////////////////////   TEMPLATE START  //////////////////////////////
 
 //  D_TYPE is defined based on the preprocessor directive set by the Makefile
-#if defined(USE_16BIT)
+#ifdef USE_16BIT 
 typedef ap_int<16> D_TYPE; // Define D_TYPE as 16-bit integer
 #define AXI_WIDTH_HBM 16
 #define INT_BITS 16
 // #define AXI_WIDTH_PLRAM 16
 // #define AXI_WIDTH_DDR 16
-#elif defined(USE_64BIT)
+#elif USE_64BIT
 typedef ap_int<64> D_TYPE; // Define D_TYPE as 64-bit integer
 #define AXI_WIDTH_HBM 64
 #define INT_BITS 64
@@ -175,6 +175,7 @@ typedef ap_int<32> D_TYPE; // Define D_TYPE as 32-bit integer
 #define PADDED_SIZE_HBM_31 4
 #define AXI_PADDED_SIZE_HBM_31 4
 #define TABLE_SIZE_HBM_31 1000000
+
 // #define DATA_SIZE_HBM_32 8
 // #define PADDED_SIZE_HBM_32 8
 // #define AXI_PADDED_SIZE_HBM_32 8
@@ -304,7 +305,7 @@ typedef ap_int<32> D_TYPE; // Define D_TYPE as 32-bit integer
 // #define AXI_PADDED_SIZE_HBM_63 16
 // #define TABLE_SIZE_HBM_63 1000000
 
-#define BURST_SIZE_HBM 32
+#define BURST_SIZE_HBM 32 // not used
 
 #define ADDR_AXI_HBM_0 0
 #define ADDR_AXI_HBM_1 0
