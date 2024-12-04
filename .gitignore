@@ -13,6 +13,9 @@ xclbin/
 *.csv
 xrc.log
 xrt.*
+_x.*
+.ipcache/*
+.Xil
 
 # Vitis workspace files
 *.xise
