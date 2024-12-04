@@ -556,7 +556,8 @@ void load_single_embedding_1_tables(
             // Enables pipelining, allowing one data element to be processed each clock cycle
             #pragma HLS pipeline II = 1
             // Write data to output stream
-           s_embedding_buffer.write(table_RAM[base_addr_0 + j]);        }
+           s_embedding_buffer.write(table_RAM[base_addr_0 + j]);        
+        }
     }
 }
 
