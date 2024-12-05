@@ -47,6 +47,8 @@ LDFLAGS += $(opencl_LDFLAGS)
 # Check if DEBUG is set to 1
 ifeq ($(DEBUG), 1)
     CXXFLAGS += -DDEBUG
+else
+	CXXFLAGS += -DNDEBUG
 endif
 
 # Compilation flags depending on the precision
