@@ -17,7 +17,7 @@ void vadd(
     const ap_int<AXI_WIDTH_HBM>* table_HBM26, const ap_int<AXI_WIDTH_HBM>* table_HBM27, 
     const ap_int<AXI_WIDTH_HBM>* table_HBM28, const ap_int<AXI_WIDTH_HBM>* table_HBM29, 
     const ap_int<AXI_WIDTH_HBM>* table_HBM30, const ap_int<AXI_WIDTH_HBM>* table_HBM31,
-    int *out
+    D_TYPE *out
     )
 {
 #pragma HLS DATAFLOW
@@ -223,38 +223,38 @@ void vadd(
 #pragma HLS stream variable=s_idx_buffer_HBM30 depth=fifo_batch_size
 #pragma HLS stream variable=s_idx_buffer_HBM31 depth=fifo_batch_size
 
-    hls::stream<int> s_result_buffer_HBM0;
-    hls::stream<int> s_result_buffer_HBM1;
-    hls::stream<int> s_result_buffer_HBM2;
-    hls::stream<int> s_result_buffer_HBM3;
-    hls::stream<int> s_result_buffer_HBM4;
-    hls::stream<int> s_result_buffer_HBM5;
-    hls::stream<int> s_result_buffer_HBM6;
-    hls::stream<int> s_result_buffer_HBM7;
-    hls::stream<int> s_result_buffer_HBM8;
-    hls::stream<int> s_result_buffer_HBM9;
-    hls::stream<int> s_result_buffer_HBM10;
-    hls::stream<int> s_result_buffer_HBM11;
-    hls::stream<int> s_result_buffer_HBM12;
-    hls::stream<int> s_result_buffer_HBM13;
-    hls::stream<int> s_result_buffer_HBM14;
-    hls::stream<int> s_result_buffer_HBM15;
-    hls::stream<int> s_result_buffer_HBM16;
-    hls::stream<int> s_result_buffer_HBM17;
-    hls::stream<int> s_result_buffer_HBM18;
-    hls::stream<int> s_result_buffer_HBM19;
-    hls::stream<int> s_result_buffer_HBM20;
-    hls::stream<int> s_result_buffer_HBM21;
-    hls::stream<int> s_result_buffer_HBM22;
-    hls::stream<int> s_result_buffer_HBM23;
-    hls::stream<int> s_result_buffer_HBM24;
-    hls::stream<int> s_result_buffer_HBM25;
-    hls::stream<int> s_result_buffer_HBM26;
-    hls::stream<int> s_result_buffer_HBM27;
-    hls::stream<int> s_result_buffer_HBM28;
-    hls::stream<int> s_result_buffer_HBM29;
-    hls::stream<int> s_result_buffer_HBM30;
-    hls::stream<int> s_result_buffer_HBM31;
+    hls::stream<D_TYPE> s_result_buffer_HBM0;
+    hls::stream<D_TYPE> s_result_buffer_HBM1;
+    hls::stream<D_TYPE> s_result_buffer_HBM2;
+    hls::stream<D_TYPE> s_result_buffer_HBM3;
+    hls::stream<D_TYPE> s_result_buffer_HBM4;
+    hls::stream<D_TYPE> s_result_buffer_HBM5;
+    hls::stream<D_TYPE> s_result_buffer_HBM6;
+    hls::stream<D_TYPE> s_result_buffer_HBM7;
+    hls::stream<D_TYPE> s_result_buffer_HBM8;
+    hls::stream<D_TYPE> s_result_buffer_HBM9;
+    hls::stream<D_TYPE> s_result_buffer_HBM10;
+    hls::stream<D_TYPE> s_result_buffer_HBM11;
+    hls::stream<D_TYPE> s_result_buffer_HBM12;
+    hls::stream<D_TYPE> s_result_buffer_HBM13;
+    hls::stream<D_TYPE> s_result_buffer_HBM14;
+    hls::stream<D_TYPE> s_result_buffer_HBM15;
+    hls::stream<D_TYPE> s_result_buffer_HBM16;
+    hls::stream<D_TYPE> s_result_buffer_HBM17;
+    hls::stream<D_TYPE> s_result_buffer_HBM18;
+    hls::stream<D_TYPE> s_result_buffer_HBM19;
+    hls::stream<D_TYPE> s_result_buffer_HBM20;
+    hls::stream<D_TYPE> s_result_buffer_HBM21;
+    hls::stream<D_TYPE> s_result_buffer_HBM22;
+    hls::stream<D_TYPE> s_result_buffer_HBM23;
+    hls::stream<D_TYPE> s_result_buffer_HBM24;
+    hls::stream<D_TYPE> s_result_buffer_HBM25;
+    hls::stream<D_TYPE> s_result_buffer_HBM26;
+    hls::stream<D_TYPE> s_result_buffer_HBM27;
+    hls::stream<D_TYPE> s_result_buffer_HBM28;
+    hls::stream<D_TYPE> s_result_buffer_HBM29;
+    hls::stream<D_TYPE> s_result_buffer_HBM30;
+    hls::stream<D_TYPE> s_result_buffer_HBM31;
 #pragma HLS stream variable=s_result_buffer_HBM0 depth=fifo_batch_size
 #pragma HLS stream variable=s_result_buffer_HBM1 depth=fifo_batch_size
 #pragma HLS stream variable=s_result_buffer_HBM2 depth=fifo_batch_size
@@ -288,7 +288,7 @@ void vadd(
 #pragma HLS stream variable=s_result_buffer_HBM30 depth=fifo_batch_size
 #pragma HLS stream variable=s_result_buffer_HBM31 depth=fifo_batch_size
 
-    hls::stream<int> s_vout_buffer; 
+    hls::stream<D_TYPE> s_vout_buffer; 
 #pragma HLS stream variable=s_vout_buffer depth=fifo_batch_size
 
     load_access_idx(
@@ -570,7 +570,7 @@ void load_single_embedding_2_tables(
 template<const int TOTAL_VECTOR_LENGTH>
 void reduction_add_single(
     hls::stream<t_hbm>& s_embedding_buffer, 
-    hls::stream<int>& s_result_buffer)  {
+    hls::stream<D_TYPE>& s_result_buffer)  {
 #pragma HLS INLINE off
 
     for (int i = 0; i < BATCH_NUM * BATCH_SIZE; i++) {
@@ -586,23 +586,23 @@ void reduction_add_single(
 }
 
 void reduction_add_all(
-    hls::stream<int>& s_result_buffer_HBM0, hls::stream<int>& s_result_buffer_HBM1, 
-    hls::stream<int>& s_result_buffer_HBM2, hls::stream<int>& s_result_buffer_HBM3, 
-    hls::stream<int>& s_result_buffer_HBM4, hls::stream<int>& s_result_buffer_HBM5, 
-    hls::stream<int>& s_result_buffer_HBM6, hls::stream<int>& s_result_buffer_HBM7, 
-    hls::stream<int>& s_result_buffer_HBM8, hls::stream<int>& s_result_buffer_HBM9, 
-    hls::stream<int>& s_result_buffer_HBM10, hls::stream<int>& s_result_buffer_HBM11, 
-    hls::stream<int>& s_result_buffer_HBM12, hls::stream<int>& s_result_buffer_HBM13, 
-    hls::stream<int>& s_result_buffer_HBM14, hls::stream<int>& s_result_buffer_HBM15, 
-    hls::stream<int>& s_result_buffer_HBM16, hls::stream<int>& s_result_buffer_HBM17, 
-    hls::stream<int>& s_result_buffer_HBM18, hls::stream<int>& s_result_buffer_HBM19, 
-    hls::stream<int>& s_result_buffer_HBM20, hls::stream<int>& s_result_buffer_HBM21, 
-    hls::stream<int>& s_result_buffer_HBM22, hls::stream<int>& s_result_buffer_HBM23, 
-    hls::stream<int>& s_result_buffer_HBM24, hls::stream<int>& s_result_buffer_HBM25, 
-    hls::stream<int>& s_result_buffer_HBM26, hls::stream<int>& s_result_buffer_HBM27, 
-    hls::stream<int>& s_result_buffer_HBM28, hls::stream<int>& s_result_buffer_HBM29, 
-    hls::stream<int>& s_result_buffer_HBM30, hls::stream<int>& s_result_buffer_HBM31,
-    hls::stream<int>& s_vout_buffer) {
+    hls::stream<D_TYPE>& s_result_buffer_HBM0, hls::stream<D_TYPE>& s_result_buffer_HBM1, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM2, hls::stream<D_TYPE>& s_result_buffer_HBM3, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM4, hls::stream<D_TYPE>& s_result_buffer_HBM5, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM6, hls::stream<D_TYPE>& s_result_buffer_HBM7, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM8, hls::stream<D_TYPE>& s_result_buffer_HBM9, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM10, hls::stream<D_TYPE>& s_result_buffer_HBM11, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM12, hls::stream<D_TYPE>& s_result_buffer_HBM13, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM14, hls::stream<D_TYPE>& s_result_buffer_HBM15, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM16, hls::stream<D_TYPE>& s_result_buffer_HBM17, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM18, hls::stream<D_TYPE>& s_result_buffer_HBM19, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM20, hls::stream<D_TYPE>& s_result_buffer_HBM21, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM22, hls::stream<D_TYPE>& s_result_buffer_HBM23, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM24, hls::stream<D_TYPE>& s_result_buffer_HBM25, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM26, hls::stream<D_TYPE>& s_result_buffer_HBM27, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM28, hls::stream<D_TYPE>& s_result_buffer_HBM29, 
+    hls::stream<D_TYPE>& s_result_buffer_HBM30, hls::stream<D_TYPE>& s_result_buffer_HBM31,
+    hls::stream<D_TYPE>& s_vout_buffer) {
         
     for (int i = 0; i < BATCH_NUM * BATCH_SIZE; i++) {
         #pragma HLS LOOP_TRIPCOUNT min=trip_count_item_num max=trip_count_item_num
@@ -664,9 +664,9 @@ void reduction_add_all(
  }
 
 void write_results(
-    hls::stream<int>& s_vout_buffer, int out_RAM[BATCH_SIZE]) {
+    hls::stream<D_TYPE>& s_vout_buffer, D_TYPE out_RAM[BATCH_SIZE]) {
 
-    int out_local[BATCH_SIZE];
+    D_TYPE out_local[BATCH_SIZE];
 
     for (int i = 0 ; i < BATCH_NUM; i++){
         for (int j = 0; j < BATCH_SIZE; j++) {

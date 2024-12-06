@@ -13,7 +13,6 @@
       exit(EXIT_FAILURE);                                           \
     }
 #include "constants.hpp"
-
 #include <vector>
 #include <unistd.h>
 #include <iostream>
